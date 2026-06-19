@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>User Registration</title>
+    <style>
+        body { font-family: Arial, sans-serif; background:#f5f7fb; margin:0; padding:20px; }
+        .container { max-width:480px; margin:40px auto; background:#fff; padding:24px; border-radius:8px; box-shadow:0 4px 18px rgba(0,0,0,0.06); }
+        h2 { margin-top:0; }
+        label { display:block; margin:12px 0 6px; font-weight:600; font-size:0.95rem; }
+        input[type="text"], input[type="email"], input[type="password"], input[type="tel"], input[type="date"], textarea, select {
+            width:100%; padding:10px; border:1px solid #ccd6e0; border-radius:6px; box-sizing:border-box;
+        }
+        .row { display:flex; gap:12px; }
+        .row .col { flex:1; }
+        .small { font-size:0.9rem; color:#6b7280; margin-top:6px; }
+        .error { color:#b91c1c; font-size:0.9rem; margin-top:6px; }
+        .actions { margin-top:18px; display:flex; justify-content:space-between; align-items:center; gap:12px; }
+        button { background:#2563eb; color:#fff; border:none; padding:10px 16px; border-radius:6px; cursor:pointer; }
+        button.secondary { background:#e5e7eb; color:#111827; }
+        .success { color:#065f46; font-weight:600; }
+    </style>
+</head>
+<body>
+    <div class="container" role="main">
+        <h2>Create account</h2>
+        <form id="regForm" novalidate>
+            <label for="firstName">First name</label>
+            <input id="firstName" name="firstName" type="text" required maxlength="50" />
+
+            <label for="lastName">Last name</label>
+            <input id="lastName" name="lastName" type="text" required maxlength="50" />
+
+            <label for="email">Email address</label>
+            <input id="email" name="email" type="email" required />
+
+            <div class="row">
+                <div class="col">
+                    <label for="password">Password</label>
+                    <input id="password" name="password" type="password" required minlength="8" />
+                </div>
+                <div class="col">
+                    <label for="confirm">Confirm password</label>
+                    <input id="confirm" name="confirm" type="password" required minlength="8" />
+                </div>
+            </div>
+
+            <label for="dob">Date of birth</label>
+            <input id="dob" name="dob" type="date" />
+
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" type="tel" pattern="^\+?[0-9\- ]{7,20}$" placeholder="+1234567890" />
+
+            <label for="gender">Gender</label>
+            <select id="gender" name="gender">
+                <option value="">Prefer not to say</option>
+                <option>Female</option>
+                <option>Male</option>
+                <option>Non-binary</option>
+                <option>Other</option>
+            </select>
+
+            <label for="address">Address</label>
+            <textarea id="address" name="address" rows="3" maxlength="300" placeholder="Street, City, State, ZIP"></textarea>
+
+            <div style="margin-top:8px;">
+                <label><input id="terms" name="terms" type="checkbox" required /> I agree to the terms and privacy policy</label>
+            </div>
+
+            <div class="error" id="error" aria-live="polite" style="display:none"></div>
+            <div class="actions">
+                <button type="submit">Register</button>
+                <button type="button" class="secondary" id="resetBtn">Reset</button>
+            </div>
+
+            <p class="small" style="margin-top:12px;">Passwords must be at least 8 characters. This form uses client-side validation only.</p>
+            <p id="result" class="success" style="display:none" aria-live="polite"></p>
+        </form>
+    </div>
+
+    <script>
+        const form = document.getElementById('regForm');
+        const errorEl = document.getElementById('error');
+        const resultEl = document.getElementById('result');
+        const resetBtn = document.getElementById('resetBtn');
+
+        function showError(msg) {
+            errorEl.style.display = 'block';
+            errorEl.textContent = msg;
+            resultEl.style.display = 'none';
+        }
+        function showSuccess(msg) {
+            errorEl.style.display = 'none';
+            resultEl.style.display = 'block';
+            resultEl.textContent = msg;
+        }
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            errorEl.style.display = 'none';
+            resultEl.style.display = 'none';
+
+            const data = new FormData(form);
+            const password = data.get('password') || '';
+            const confirm = data.get('confirm') || '';
+            const email = data.get('email') || '';
+            const terms = form.elements['terms'].checked;
+
+            if (!email) return showError('Please enter an email.');
+            if (password.length < 8) return showError('Password must be at least 8 characters.');
+            if (password !== confirm) return showError('Passwords do not match.');
+            if (!terms) return showError('You must agree to the terms.');
+
+            // Example: show collected data (except password) -- replace with real submit to server
+            const payload = {
+                firstName: data.get('firstName') || '',
+                lastName: data.get('lastName') || '',
+                email,
+                dob: data.get('dob') || '',
+                phone: data.get('phone') || '',
+                gender: data.get('gender') || '',
+                address: data.get('address') || ''
+            };
+
+            // Simulate successful registration
+            showSuccess('Registration successful. Data: ' + JSON.stringify(payload));
+            // To actually send to a server, use fetch() here.
+        });
+
+        resetBtn.addEventListener('click', () => {
+            form.reset();
+            errorEl.style.display = 'none';
+            resultEl.style.display = 'none';
+        });
+    </script>
+</body>
+</html>
